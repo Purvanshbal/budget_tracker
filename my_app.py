@@ -6,7 +6,7 @@ from wtforms.validators import DataRequired, EqualTo, Length
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_migrate import Migrate
-
+from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 
 app = Flask(__name__)
 
@@ -21,7 +21,7 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
 #Create a Model
-class Users(db.Model):
+class Users(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False)
     email = db.Column(db.String(250), nullable=False, unique=True)
@@ -68,12 +68,14 @@ def add_user():
     if form.validate_on_submit():
         user = Users.query.filter_by(email = form.email.data).first()
         if user is None:
-            user = Users(name = form.name.data, email = form.email.data)
+            hashed_pw = generate_password_hash(form.password_hash.data, "sha256")
+            user = Users(name = form.name.data, email = form.email.data, password_hash = hashed_pw)
             db.session.add(user)
             db.session.commit()
         name = form.name.data 
         form.name.data = ""
         form.email.data = ""
+        form.password_hash = ""
         flash("USER ADDED SUCCESFULLY")   
     our_users = Users.query
     return render_template('add_user.html', form = form, name = name, our_users = our_users)
