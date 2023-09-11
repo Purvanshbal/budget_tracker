@@ -10,9 +10,14 @@
         <h1 class="logo">Budget Tracker</h1>
         <strong><nav>
           <ul class="menu">
+            {% if current_user.is_authenticated %}
+            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            {% else %}
             <li><a href="{{ url_for('login') }}">Login</a></li>
-            <li><a href="{{ url_for('about') }}">About</a></li>
             <li><a href="{{ url_for('add_user') }}">Register</a></li>
+            {% endif %}
+            <li><a href="{{ url_for('about') }}">About</a></li>
+            
           </ul>
         </nav></strong>
       </div>

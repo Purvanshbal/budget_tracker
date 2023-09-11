@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block content %}
+<head>
+    <title>Register</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/add_user.css') }}">
+  </head>
+<body>  
+<div class="container">
+ 
+  <div class="alert alert-success" role="alert">
+      Dashboard
+  </div>
+  <p>You are Logged in!</p>
+
+  <a href="{{ url_for('logout')}}">Logout</a>
+</div>
+</body>
+{% endblock %}

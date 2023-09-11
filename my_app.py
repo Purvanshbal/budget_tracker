@@ -1,5 +1,5 @@
 from flask import Flask
-from flask import render_template, flash
+from flask import render_template, flash, redirect, url_for
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField, BooleanField, ValidationError
 from wtforms.validators import DataRequired, EqualTo, Length
@@ -20,12 +20,28 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
+#Login Manager
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
+@login_manager.user_loader
+def load_user(user_id):
+    return Users.query.get(int(user_id))
+
+#Create Login Form
+class LoginForm(FlaskForm):
+    username = StringField("Username", validators = [DataRequired()])
+    password = PasswordField("Password", validators = [DataRequired()])
+    submit = SubmitField("Submit")
+
 #Create a Model
 class Users(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False)
     email = db.Column(db.String(250), nullable=False, unique=True)
     password_hash = db.Column(db.String(250))
+    
 
     @property
     def password(self):
@@ -50,10 +66,36 @@ class UserForm(FlaskForm):
     submit = SubmitField("Submit")
     
 
-@app.route('/')
-#The first page that opens is the login page for the budget tracker. So an empty request renders index.html (which has the login stuff)
+@app.route('/', methods = ['GET', 'POST'])
 def login():
-    return render_template('login.html')
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = Users.query.filter_by(email = form.username.data).first()
+        if user:
+            #check the has
+            if check_password_hash(user.password_hash, form.password.data):
+                login_user(user)
+                flash("Login Succesfull!") 
+                return redirect(url_for('dashboard'))
+            else:
+                flash("Wrong Password!")
+        else:
+            flash("Incorrect Username!")     
+    return render_template('login.html', form = form)
+
+#Create Logout Page
+@app.route('/logout/', methods = ['GET', 'POST'])
+@login_required
+def logout():
+    logout_user()
+    flash("You have been logged out!")
+    return redirect(url_for('login'))
+
+#Create Dashboard Page
+@app.route('/dashboard/', methods = ['GET', 'POST'])
+@login_required
+def dashboard():
+    return render_template('dashboard.html')
 
 
 @app.route('/about/')

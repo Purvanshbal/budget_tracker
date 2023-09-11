@@ -1,41 +1,33 @@
-<!-- templates/index.html -->
 {% extends "layout.html" %}
 {% block content %}
-
 <head>
-    <title>My Flask App with Bootstrap</title>
-    <!-- Include Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-<body>
-    <section class="vh-100">
-        <div class="container py-5 h-100">
-          <div class="row d-flex align-items-center justify-content-center h-100">
-            <div class="col-md-8 col-lg-7 col-xl-6">
-              <img src="{{ url_for('static', filename='image.png') }}"
-                class="img-fluid" alt="Phone image">
-            </div>
-            <div class="col-md-7 col-lg-5 col-xl-5 offset-xl-1">
-                <!-- Purvansh Removed the email address and password stuff to relocate it to a login and signup modal-->
-                <!-- Email input 
-                <div class="form-outline mb-4">
-                  <input type="email" id="form1Example13" class="form-control form-control-lg" />
-                  <label class="form-label" for="form1Example13">Email address</label>
-                </div>
-      
-              Password input
-                <div class="form-outline mb-4">
-                  <input type="password" id="form1Example23" class="form-control form-control-lg" />
-                  <label class="form-label" for="form1Example23">Password</label>
-                </div>
-               Submit button -->
-              
-                <button type="login" class="btn btn-primary btn-lg btn-block">Login</button>
-                <button type="signup" class="btn btn-primary btn-lg btn-block">Register</button>
-    
-            </div>
-          </div> 
-        </div>
-      </section>
+    <title>Register</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/add_user.css') }}">
+  </head>
+<body>  
+<div class="container">
+ 
+  <div class="alert alert-success" role="alert">
+      Login!
+  </div>
+  <ul class="list-group"></ul>
+  <div class="card">
+      <div class="card-body">
+          <h5 class="card-title">Add User</h5>
+          <form method="POST">
+              {{ form.hidden_tag() }}
+              <div class="mb-3">
+                  {{ form.username.label(class="form-label") }}
+                  {{ form.username(class="form-control") }}
+              </div>
+              <div class="mb-3">
+                  {{ form.password.label(class="form-label") }}
+                  {{ form.password(class="form-control") }}
+              </div>
+              <button type="submit" class="btn btn-primary">Submit</button>
+          </form>
+      </div>
+  </div>
+</div>
 </body>
 {% endblock %}
