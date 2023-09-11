@@ -1,7 +1,7 @@
 from flask import Flask
 from flask import render_template, flash, redirect, url_for
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, BooleanField, ValidationError
+from wtforms import StringField, SubmitField, PasswordField, BooleanField, ValidationError, IntegerField
 from wtforms.validators import DataRequired, EqualTo, Length
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -41,7 +41,6 @@ class Users(db.Model, UserMixin):
     name = db.Column(db.String(200), nullable=False)
     email = db.Column(db.String(250), nullable=False, unique=True)
     password_hash = db.Column(db.String(250))
-    
 
     @property
     def password(self):
@@ -55,7 +54,7 @@ class Users(db.Model, UserMixin):
         return check_password_hash(self.password_hash, password)
 
     def __repr__(self):
-        return '<Name %r>' % self.name
+        return '<Name %r>' % self.name 
 
 #Create a Form class
 class UserForm(FlaskForm):
@@ -65,6 +64,20 @@ class UserForm(FlaskForm):
     password_hash2 =  PasswordField("Confirm Password", validators = [DataRequired()])
     submit = SubmitField("Submit")
     
+
+#Create a model
+class Budget(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    income = db.Column(db.Integer, nullable = False)
+    expense = db.Column(db.Integer)
+    person = db.Column(db.String(200))   
+
+#Create a posts form
+class AddBudget(FlaskForm):
+    income = IntegerField("Allowed Spending", validators = [DataRequired()])
+    expense = IntegerField("Money Spent", validators = [DataRequired()])
+    person = StringField("Name", validators = [DataRequired()])
+    submit = SubmitField("Submit")
 
 @app.route('/', methods = ['GET', 'POST'])
 def login():
@@ -95,7 +108,23 @@ def logout():
 @app.route('/dashboard/', methods = ['GET', 'POST'])
 @login_required
 def dashboard():
-    return render_template('dashboard.html')
+    form = AddBudget()
+    if form.validate_on_submit():
+        budget = Budget(income = form.income.data, expense = form.expense.data, person = form.person.data)
+        #clear the form
+        form.income.data = ""
+        form.expense.data = ""
+        form.person.data = ""
+        #add to db
+        db.session.add(budget)
+        db.session.commit()
+        flash("Budget Added !!")
+    return render_template('dashboard.html', form = form)
+
+@app.route('/budget/', methods = ['GET', 'POST'])
+def budget():
+    budget = Budget.query
+    return render_template('budget.html', budget = budget)    
 
 
 @app.route('/about/')

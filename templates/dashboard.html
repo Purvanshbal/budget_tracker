@@ -11,8 +11,28 @@
       Dashboard
   </div>
   <p>You are Logged in!</p>
-
   <a href="{{ url_for('logout')}}">Logout</a>
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Set Budget</h5>
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            <div class="mb-3">
+                {{ form.income.label(class="form-label") }}
+                {{ form.income(class="form-control") }}
+            </div>
+            <div class="mb-3">
+                {{ form.expense.label(class="form-label") }}
+                {{ form.expense(class="form-control") }}
+            </div>
+            <div class="mb-3">
+                {{ form.person.label(class="form-label") }}
+                {{ form.person(class="form-control") }}
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+
 </div>
 </body>
 {% endblock %}

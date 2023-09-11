@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block content %}
+<hi>Your Spendings...</hi>
+<br/>
+{% for i in budget %}
+    {{i.income}} </br>
+    {{i.expense}} </br>
+    {{i.person}} </br>
+{% endfor %}
+{% endblock %}
